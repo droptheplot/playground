@@ -13,8 +13,10 @@
 (def handler
   (ataraxy/handler
     {:routes '{"/" [:index]
+               [:post "/execute"] [:execute]
                [^{:re #"/(js|css)/(.+)"} path] [:resource path]}
      :handlers {:index handlers/index
+                :execute handlers/execute
                 :resource handlers/resource}}))
 
 (defn -main [& args]

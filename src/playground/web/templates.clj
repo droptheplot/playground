@@ -1,7 +1,9 @@
 (ns playground.web.templates
-  (:use hiccup.core)
-  (:use hiccup.page)
-  (:use hiccup.element))
+  (:use hiccup.core
+        hiccup.page
+        hiccup.element
+        hiccup.form
+        ring.util.anti-forgery))
 
 (defn- head [title]
   (html
@@ -14,8 +16,17 @@
                           :crossorigin "anonymous")
      (include-css "css/app.css")]))
 
+(defn input-form []
+  (html
+    [:form {:action "/execute" :method "POST"}
+     (anti-forgery-field)
+     [:div.form-group (text-area {:class "form-control" :rows 10} "input")]
+     [:div.form-group (submit-button {:class "btn btn-primary"} "Submit")]]))
+
 (defn index []
   (html
     (head "Playground")
     [:body
-     [:div.container-fluid]]))
+     [:div.container-fluid.p-5
+      [:h1.mb-3 "Playground"]
+      (input-form)]]))

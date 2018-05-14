@@ -6,5 +6,9 @@
   (-> (response (templates/index))
       (content-type "text/html")))
 
+(defn execute [{params :params}]
+  (-> (response (get params :input))
+      (content-type "text/html")))
+
 (defn resource [{{path :path} :route-params}]
   (file-response path {:root "resources"}))
