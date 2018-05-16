@@ -23,10 +23,17 @@
      [:div.form-group (text-area {:class "form-control" :rows 10} "input")]
      [:div.form-group (submit-button {:class "btn btn-primary"} "Submit")]]))
 
-(defn index []
+(defn index [history]
   (html
     (head "Playground")
     [:body
      [:div.container-fluid.p-5
-      [:h1.mb-3 "Playground"]
-      (input-form)]]))
+      [:div.row
+       [:div.col-2
+        [:h5.mb-3 "History"]
+        [:ul.list-group.list-group-flush
+         (for [item history]
+           [:li.list-group-item item])]]
+       [:div.col
+        [:h1.mb-3 "Playground"]
+        (input-form)]]]]))

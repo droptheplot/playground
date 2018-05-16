@@ -12,6 +12,8 @@ services:
       - default-network
     depends_on:
       - redis
+    environment:
+      - REDIS_URL=${REDIS_URL}
   redis:
     image: redis:3-alpine
     ports:
