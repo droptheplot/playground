@@ -1,2 +1,6 @@
 /.cpcache
 /.env
+/resources/js/*
+!/resources/js/.keep
+/resources/css/*
+!/resources/css/.keep
