@@ -16,14 +16,7 @@
                           :crossorigin "anonymous")
      (include-css "css/main.css")]))
 
-(defn input-form []
-  (html
-    [:form {:action "/execute" :method "POST"}
-     (anti-forgery-field)
-     [:div.form-group (text-area {:class "form-control" :rows 10} "input")]
-     [:div.form-group (submit-button {:class "btn btn-primary"} "Submit")]]))
-
-(defn index [history]
+(defn index []
   (html
     (head "Playground")
     [:body
@@ -31,9 +24,8 @@
       [:div.row
        [:div.col-2
         [:h5.mb-3 "History"]
-        [:ul.list-group.list-group-flush
-         (for [item history]
-           [:li.list-group-item item])]]
+        [:div#history-list]]
        [:div.col
         [:h1.mb-3 "Playground"]
-        (input-form)]]]]))
+        [:div#execute-form]]]]
+     (javascript-tag "playground.web.js.core.run();")]))

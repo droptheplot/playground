@@ -2,29 +2,49 @@
   (:require [ring.adapter.jetty :as jetty]
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.reload :refer [wrap-reload]]
-            [ring.logger :as logger]
+            [ring.middleware.json :refer [wrap-json-response wrap-json-body wrap-json-params]]
+            [ring.middleware.content-type :refer [wrap-content-type]]
+            [ring.middleware.params :refer [wrap-params]]
+            [ring.middleware.keyword-params :refer [wrap-keyword-params]]
+            [ring.logger :refer [wrap-with-logger]]
             [ataraxy.core :as ataraxy]
-            [playground.web.handlers :as handlers])
-  (:use ring.middleware.resource
-        ring.middleware.content-type
-        ring.middleware.not-modified
-        ring.middleware.defaults))
+            [playground.web.handlers :as handlers]))
+
+(defn api [handler]
+  (-> handler
+      (wrap-json-body)
+      (wrap-json-params)
+      (wrap-json-response)
+      (wrap-params)
+      (wrap-keyword-params)
+      (wrap-reload)
+      (wrap-with-logger)))
+
+(defn site [handler]
+  (-> handler
+      (wrap-params)
+      (wrap-keyword-params)
+      (wrap-reload)
+      (wrap-with-logger)))
+
+(defn resource [handler]
+  (-> handler
+      (wrap-resource "resources")
+      (wrap-content-type)))
 
 (def handler
   (ataraxy/handler
-    {:routes '{"/" [:index]
-               [:post "/execute"] [:execute]
-               [^{:re #"/(js|css)/(.+)"} path] [:resource path]}
+    {:routes '{"/" ^:site [:index]
+               [^{:re #"/(js|css)/(.+)"} path] ^:resource [:resource path]
+               "/api" ^:api {"/history" [:history]
+                             [:post "/execute"] [:execute]}}
      :handlers {:index handlers/index
+                :history handlers/history
                 :execute handlers/execute
-                :resource handlers/resource}}))
+                :resource handlers/resource}
+     :middleware {:api api
+                  :site site
+                  :resource resource}}))
 
 (defn -main [& args]
-  (jetty/run-jetty
-    (-> handler
-        (wrap-resource "resources")
-        (wrap-content-type)
-        (wrap-defaults site-defaults)
-        (wrap-reload)
-        (logger/wrap-with-logger))
-    {:port 8080}))
+  (jetty/run-jetty handler {:port 8080}))
