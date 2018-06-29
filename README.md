@@ -3,5 +3,5 @@
 ## Development
 
 ```shell
-make up
+docker-compose up
 ```

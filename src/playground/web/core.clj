@@ -8,7 +8,8 @@
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
             [ring.logger :refer [wrap-with-logger]]
             [ataraxy.core :as ataraxy]
-            [playground.web.handlers :as handlers]))
+            [playground.web.handlers :as handlers]
+            [playground.web.builders :as builders]))
 
 (defn api [handler]
   (-> handler
@@ -47,4 +48,6 @@
                   :resource resource}}))
 
 (defn -main [& args]
+  (builders/watch-css)
+  (builders/watch-js)
   (jetty/run-jetty handler {:port 8080}))
